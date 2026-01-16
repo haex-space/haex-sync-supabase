@@ -22,12 +22,15 @@ services:
       POSTGRES_HOST: /var/run/postgresql
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      PGPORT: ${POSTGRES_PORT:-5432}
+      PGDATABASE: ${POSTGRES_DB:-postgres}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXP: ${JWT_EXPIRY:-3600}
     volumes:
-      - db_data:/var/lib/postgresql/data:Z
+      - ./volumes/db/data:/var/lib/postgresql/data:Z
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER:-postgres} -h localhost
       interval: 5s
@@ -197,7 +200,7 @@ services:
       ENABLE_IMAGE_TRANSFORMATION: "true"
       IMGPROXY_URL: http://imgproxy:8080
     volumes:
-      - storage_data:/var/lib/storage:z
+      - ./volumes/storage:/var/lib/storage:z
     networks:
       - internal
 
@@ -214,7 +217,7 @@ services:
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_ENABLE_WEBP_DETECTION: "true"
     volumes:
-      - storage_data:/var/lib/storage:ro
+      - ./volumes/storage:/var/lib/storage:ro
     networks:
       - internal
 
@@ -297,11 +300,3 @@ networks:
     name: ${TRAEFIK_NETWORK:-proxy}
     external: true
 
-# =============================================================================
-# VOLUMES
-# =============================================================================
-volumes:
-  db_data:
-    driver: local
-  storage_data:
-    driver: local
