@@ -28,10 +28,6 @@ services:
       JWT_EXP: ${JWT_EXPIRY:-3600}
     volumes:
       - db_data:/var/lib/postgresql/data:Z
-      - ./config/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:ro
-      - ./config/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:ro
-      - ./config/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:ro
-      - ./config/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:ro
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER:-postgres} -h localhost
       interval: 5s
