@@ -95,6 +95,18 @@ services:
   ## ==========================================================================
   ## REALTIME (WebSockets)
   ## ==========================================================================
+  # WebSocket route - don't strip path, forward to /socket/websocket
+  - name: realtime-v1-ws
+    url: http://realtime:4000/socket/websocket
+    routes:
+      - name: realtime-v1-ws
+        strip_path: true
+        paths:
+          - /realtime/v1/websocket
+    plugins:
+      - name: cors
+
+  # REST API route
   - name: realtime-v1
     url: http://realtime:4000/socket
     routes:
@@ -102,16 +114,6 @@ services:
         strip_path: true
         paths:
           - /realtime/v1/
-    plugins:
-      - name: cors
-
-  - name: realtime-v1-ws
-    url: http://realtime:4000/socket
-    routes:
-      - name: realtime-v1-ws
-        strip_path: true
-        paths:
-          - /realtime/v1/websocket
     plugins:
       - name: cors
 
