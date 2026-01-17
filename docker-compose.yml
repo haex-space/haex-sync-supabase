@@ -259,6 +259,7 @@ services:
       meta:
         condition: service_started
     environment:
+      HOSTNAME: 0.0.0.0
       STUDIO_PG_META_URL: http://meta:8080
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       DEFAULT_ORGANIZATION_NAME: HaexHub
@@ -273,8 +274,8 @@ services:
       NEXT_PUBLIC_ENABLE_LOGS: "true"
       NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
     networks:
-      - internal
       - proxy
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${TRAEFIK_NETWORK:-proxy}"
