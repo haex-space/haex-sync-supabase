@@ -9,7 +9,7 @@ services:
   # POSTGRESQL DATABASE
   # ===========================================================================
   db:
-    image: ${POSTGRES_IMAGE:-supabase/postgres:15.8.1.085}
+    image: ${POSTGRES_IMAGE:-supabase/postgres:latest}
     container_name: supabase-db
     restart: unless-stopped
     command:
@@ -92,7 +92,7 @@ services:
   # GOTRUE (AUTHENTICATION)
   # ===========================================================================
   auth:
-    image: ${GOTRUE_IMAGE:-supabase/gotrue:v2.170.0}
+    image: ${GOTRUE_IMAGE:-supabase/gotrue:latest}
     container_name: supabase-auth
     restart: unless-stopped
     depends_on:
@@ -133,7 +133,7 @@ services:
   # POSTGREST (REST API)
   # ===========================================================================
   rest:
-    image: ${POSTGREST_IMAGE:-postgrest/postgrest:v12.2.8}
+    image: ${POSTGREST_IMAGE:-postgrest/postgrest:latest}
     container_name: supabase-rest
     restart: unless-stopped
     depends_on:
@@ -154,7 +154,7 @@ services:
   # REALTIME (WEBSOCKETS)
   # ===========================================================================
   realtime:
-    image: ${REALTIME_IMAGE:-supabase/realtime:v2.34.47}
+    image: ${REALTIME_IMAGE:-supabase/realtime:latest}
     # Container name must include tenant prefix for multi-tenant routing
     # Realtime constructs tenant id by parsing the subdomain
     container_name: ${REALTIME_TENANT_NAME:-haex}.supabase-realtime
@@ -188,7 +188,7 @@ services:
   # STORAGE API
   # ===========================================================================
   storage:
-    image: ${STORAGE_IMAGE:-supabase/storage-api:v1.14.6}
+    image: ${STORAGE_IMAGE:-supabase/storage-api:latest}
     container_name: supabase-storage
     restart: unless-stopped
     depends_on:
@@ -199,8 +199,8 @@ services:
     environment:
       ANON_KEY: ${ANON_KEY}
       SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      AUTH_JWT_SECRET: ${JWT_SECRET}
       POSTGREST_URL: http://rest:3000
-      PGRST_JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: postgres://${POSTGRES_USER:-supabase_admin}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-postgres}
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: ${STORAGE_BACKEND:-file}
@@ -238,7 +238,7 @@ services:
   # POSTGRES META (for Studio)
   # ===========================================================================
   meta:
-    image: ${META_IMAGE:-supabase/postgres-meta:v0.93.1}
+    image: ${META_IMAGE:-supabase/postgres-meta:latest}
     container_name: supabase-meta
     restart: unless-stopped
     depends_on:
@@ -289,14 +289,14 @@ services:
       - "traefik.docker.network=${TRAEFIK_NETWORK:-proxy}"
       # HTTP Router - Redirect to HTTPS
       - "traefik.http.routers.supabase-studio.entrypoints=${TRAEFIK_ENDPOINT_HTTP_NAME:-web}"
-      - "traefik.http.routers.supabase-studio.rule=Host(`studio.${DOMAIN}`)"
+      - "traefik.http.routers.supabase-studio.rule=Host(`${STUDIO_DOMAIN}`)"
       - "traefik.http.routers.supabase-studio.middlewares=supabase-studio-https-redirect"
       # HTTPS Redirect Middleware
       - "traefik.http.middlewares.supabase-studio-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.supabase-studio-https-redirect.redirectscheme.permanent=true"
       # HTTPS Router with Basic Auth
       - "traefik.http.routers.supabase-studio_secure.entrypoints=${TRAEFIK_ENDPOINT_HTTPS_NAME:-web_secure}"
-      - "traefik.http.routers.supabase-studio_secure.rule=Host(`studio.${DOMAIN}`)"
+      - "traefik.http.routers.supabase-studio_secure.rule=Host(`${STUDIO_DOMAIN}`)"
       - "traefik.http.routers.supabase-studio_secure.tls=true"
       - "traefik.http.routers.supabase-studio_secure.tls.certresolver=${TRAEFIK_LETS_ENCRYPT_RESOLVER:-http_resolver}"
       - "traefik.http.routers.supabase-studio_secure.middlewares=supabase-auth"
@@ -319,6 +319,7 @@ volumes:
 # =============================================================================
 networks:
   internal:
+    name: haex-supabase_internal
     driver: bridge
   proxy:
     name: ${TRAEFIK_NETWORK:-proxy}
