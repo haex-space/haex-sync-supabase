@@ -96,9 +96,9 @@ services:
   ## REALTIME (WebSockets) - Multi-tenant v2.x
   ## ==========================================================================
   # WebSocket route - hostname-based tenant routing
-  # Container hostname must match: ${REALTIME_TENANT_NAME}.supabase-realtime
+  # Container hostname: realtime.sync-supabase (REALTIME_TENANT_NAME=realtime)
   - name: realtime-v1-ws
-    url: http://haex.supabase-realtime:4000/socket/websocket
+    url: http://realtime.sync-supabase:4000/socket/websocket
     routes:
       - name: realtime-v1-ws
         strip_path: true
@@ -109,7 +109,7 @@ services:
 
   # REST API route
   - name: realtime-v1
-    url: http://haex.supabase-realtime:4000/socket
+    url: http://realtime.sync-supabase:4000/socket
     routes:
       - name: realtime-v1
         strip_path: true
