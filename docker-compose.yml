@@ -50,7 +50,7 @@ services:
   # KONG API GATEWAY
   # ===========================================================================
   kong:
-    image: ${KONG_IMAGE:-kong:2.8.1}
+    image: ${KONG_IMAGE:-kong:3.9}
     container_name: sync-supabase-kong
     restart: unless-stopped
     # Custom entrypoint to substitute environment variables in kong.yml using sed
@@ -87,6 +87,11 @@ services:
       - "traefik.http.services.sync-supabase.loadbalancer.server.port=8000"
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+    healthcheck:
+      test: kong health
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # ===========================================================================
   # GOTRUE (AUTHENTICATION)
@@ -130,6 +135,11 @@ services:
       GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
       GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
       GOTRUE_SECURITY_CAPTCHA_SECRET: ${CAPTCHA_SECRET:-}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9999/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - internal
 
@@ -151,6 +161,11 @@ services:
       PGRST_DB_USE_LEGACY_GUCS: "false"
       PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
       PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/ready || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - internal
 
@@ -209,13 +224,18 @@ services:
       FILE_SIZE_LIMIT: 52428800
       STORAGE_BACKEND: ${STORAGE_BACKEND:-file}
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
-      TENANT_ID: stub
-      REGION: stub
-      GLOBAL_S3_BUCKET: stub
+      TENANT_ID: ${STORAGE_TENANT_ID:-haex-sync}
+      REGION: ${STORAGE_REGION:-eu-central-1}
+      GLOBAL_S3_BUCKET: ${STORAGE_S3_BUCKET:-haex-sync-storage}
       ENABLE_IMAGE_TRANSFORMATION: "true"
       IMGPROXY_URL: http://imgproxy:8080
       # Public URL for signed URL generation (required for self-hosted)
       API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5000/status || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
     volumes:
       - sync-supabase-storage-data:/var/lib/storage
     networks:
@@ -255,6 +275,11 @@ services:
       PG_META_DB_NAME: ${POSTGRES_DB:-postgres}
       PG_META_DB_USER: ${POSTGRES_USER:-supabase_admin}
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - internal
 
@@ -311,12 +336,39 @@ services:
       # Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
 
+  # ===========================================================================
+  # DATABASE BACKUP
+  # ===========================================================================
+  backup:
+    image: prodrigestivill/postgres-backup-local:latest
+    container_name: sync-supabase-backup
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-supabase_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_EXTRA_OPTS: "-Z6 --schema=public --blobs"
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+      HEALTHCHECK_PORT: 8080
+    volumes:
+      - sync-supabase-backups:/backups
+    networks:
+      - internal
+
 # =============================================================================
 # VOLUMES
 # =============================================================================
 volumes:
   sync-supabase-db-data:
   sync-supabase-storage-data:
+  sync-supabase-backups:
 
 # =============================================================================
 # NETWORKS

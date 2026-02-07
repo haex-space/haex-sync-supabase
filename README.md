@@ -4,8 +4,8 @@ Self-hosted Supabase instance for haex.space.
 
 ## Architecture
 
-- **API**: `https://supabase.haex.space`
-- **Studio**: `https://studio.supabase.haex.space`
+- **API**: `https://api.sync.haex.space`
+- **Studio**: `https://studio.sync.haex.space`
 
 ## Initial Deployment (via Ansible)
 
@@ -89,7 +89,7 @@ docker compose up -d
    ```
 
 3. Update client configurations:
-   - Change `SUPABASE_URL` to `https://supabase.haex.space`
+   - Change `SUPABASE_URL` to `https://api.sync.haex.space`
    - Update API keys (ANON_KEY, SERVICE_ROLE_KEY)
 
 ## Backups

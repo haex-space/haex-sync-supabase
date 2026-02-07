@@ -2,6 +2,18 @@ _format_version: "2.1"
 _transform: true
 
 ###
+### Global Plugins (Rate Limiting)
+###
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 60
+      hour: 1000
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+
+###
 ### Consumers / API Keys
 ###
 consumers:
