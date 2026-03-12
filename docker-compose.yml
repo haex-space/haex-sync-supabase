@@ -137,6 +137,8 @@ services:
       GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
       GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
       GOTRUE_SECURITY_CAPTCHA_SECRET: ${CAPTCHA_SECRET:-}
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:9999/health || exit 1
       interval: 10s
