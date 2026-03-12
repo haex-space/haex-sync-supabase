@@ -103,8 +103,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./templates/email:/etc/gotrue/templates:ro
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
@@ -134,9 +132,9 @@ services:
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
       GOTRUE_OTP_EXP: 300
       GOTRUE_RATE_LIMIT_HEADER: X-Forwarded-For
-      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: /etc/gotrue/templates/magic_link.html
-      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: /etc/gotrue/templates/confirmation.html
-      GOTRUE_MAILER_TEMPLATES_RECOVERY: /etc/gotrue/templates/recovery.html
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/magic_link.html
+      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/confirmation.html
+      GOTRUE_MAILER_TEMPLATES_RECOVERY: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/recovery.html
       # Turnstile Captcha
       GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
       GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
