@@ -97,12 +97,14 @@ services:
   # GOTRUE (AUTHENTICATION)
   # ===========================================================================
   auth:
-    image: ${GOTRUE_IMAGE:-ghcr.io/haex-space/haex-sync-supabase:latest}
+    image: ${GOTRUE_IMAGE:-supabase/gotrue:v2.184.0}
     container_name: sync-supabase-auth
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./templates/email:/etc/gotrue/templates:ro
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
