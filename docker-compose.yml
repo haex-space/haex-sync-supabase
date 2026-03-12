@@ -131,10 +131,15 @@ services:
       GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
       GOTRUE_RATE_LIMIT_HEADER: X-Forwarded-For
+      GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: /etc/gotrue/templates/magic_link.html
+      GOTRUE_MAILER_TEMPLATES_RECOVERY: /etc/gotrue/templates/recovery.html
       # Turnstile Captcha
       GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
       GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
       GOTRUE_SECURITY_CAPTCHA_SECRET: ${CAPTCHA_SECRET:-}
+    volumes:
+      - ./templates/email/magic_link.html:/etc/gotrue/templates/magic_link.html:ro
+      - ./templates/email/recovery.html:/etc/gotrue/templates/recovery.html:ro
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:9999/health || exit 1
       interval: 10s
