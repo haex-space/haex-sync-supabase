@@ -135,6 +135,9 @@ services:
       GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/magic_link.html
       GOTRUE_MAILER_TEMPLATES_CONFIRMATION: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/confirmation.html
       GOTRUE_MAILER_TEMPLATES_RECOVERY: https://raw.githubusercontent.com/haex-space/haex-sync-supabase/main/templates/email/recovery.html
+      GOTRUE_MAILER_SUBJECTS_MAGIC_LINK: "Your OTP Code – HaexSpace"
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: "Your OTP Code – HaexSpace"
+      GOTRUE_MAILER_SUBJECTS_RECOVERY: "Reset your password – HaexSpace"
       # Turnstile Captcha
       GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
       GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
