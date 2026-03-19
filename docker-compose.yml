@@ -171,10 +171,7 @@ services:
       PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
       PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
     healthcheck:
-      test: ["CMD", "/bin/postgrest", "--ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      disable: true
     networks:
       - internal
 
