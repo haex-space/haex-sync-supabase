@@ -171,7 +171,7 @@ services:
       PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
       PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:3000/ready || exit 1
+      test: ["CMD", "/bin/postgrest", "--ready"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -241,7 +241,7 @@ services:
       # Public URL for signed URL generation (required for self-hosted)
       API_EXTERNAL_URL: ${API_EXTERNAL_URL}
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:5000/status || exit 1
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5000/status').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -285,7 +285,7 @@ services:
       PG_META_DB_USER: ${POSTGRES_USER:-supabase_admin}
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 3
